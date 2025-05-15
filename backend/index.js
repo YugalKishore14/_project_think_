@@ -156,15 +156,9 @@ app.post("/login", async (req, res) => {
 
 // New Collection
 app.get("/newcollection", async (req, res) => {
-    try {
-        let products = await Product.find({});
-        let newCollection = products.slice(-8);
-        res.send(newCollection);
-    } catch (error) {
-        res
-            .status(500)
-            .json({ success: false, message: "Error fetching collection" });
-    }
+    let products = await Product.find({});
+    let newCollection = products.slice(1).slice(-8);
+    res.send(newCollection);
 });
 
 // Popular in Women
