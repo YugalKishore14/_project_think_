@@ -15,14 +15,14 @@ const { error } = require("console");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const corsOptions = {
-    origin: "http://localhost:5173",
-    optionsSuccessStatus: 200
-};
+// const corsOptions = {
+//     origin: "http://localhost:5173",
+//     optionsSuccessStatus: 200
+// };
 
 // Middleware
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 
 // MongoDB Connection
 mongoose
