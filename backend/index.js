@@ -195,11 +195,31 @@ const fetchUser = (req, res, next) => {
     }
 };
 
+
 // Add to Cart
 app.post("/addtocart", fetchUser, async (req, res) => {
-    console.log(req.body, req.user);
-    res.json({ success: true, message: "Add to cart endpoint hit" });
+    try {
+        const userId = req.user.id;
+        const { id: productId } = req.body;
+        if (typeof productId === "undefined") {
+            return res.status(400).json({ success: false, message: "Product ID is required" });
+        }
+        const user = await Users.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        if (!user.cartData) {
+            user.cartData = {};
+        }
+        user.cartData[productId] = (user.cartData[productId] || 0) + 1;
+        await user.save();
+        res.json({ success: true, message: "Product added to cart", cartData: user.cartData });
+    } catch (error) {
+        console.error("Add to cart error:", error);
+        res.status(500).json({ success: false, message: "Failed to add product to cart" });
+    }
 });
+
 
 
 // Start Server
