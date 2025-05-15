@@ -35,7 +35,7 @@ const AddProduct = () => {
             let formData = new FormData();
             formData.append('product', image);
 
-            let uploadRes = await fetch('https://e-commerce-backend-sme3.onrender.com/upload', {
+            let uploadRes = await fetch('https://project-think-backend.onrender.com/upload', {
                 method: 'POST',
                 headers: { Accept: 'application/json' },
                 body: formData
@@ -49,7 +49,7 @@ const AddProduct = () => {
                     image: uploadData.image_url
                 };
 
-                let productRes = await fetch('https://e-commerce-backend-sme3.onrender.com/addproduct', {
+                let productRes = await fetch('https://project-think-backend.onrender.com/addproduct', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

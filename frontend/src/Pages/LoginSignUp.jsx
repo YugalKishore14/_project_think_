@@ -16,7 +16,7 @@ function LoginSignUp() {
   const login = async () => {
     console.log("Login function executed", formData);
     let responseData;
-    await fetch('https://e-commerce-backend-sme3.onrender.com/login', {
+    await fetch('https://project-think-backend.onrender.com/login', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -36,7 +36,7 @@ function LoginSignUp() {
   const signup = async () => {
     console.log("Sign Up function executed", formData);
     let responseData;
-    await fetch('https://e-commerce-backend-sme3.onrender.com/signup', {
+    await fetch('https://project-think-backend.onrender.com/signup', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

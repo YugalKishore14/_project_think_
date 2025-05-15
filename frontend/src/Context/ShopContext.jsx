@@ -17,7 +17,7 @@ const ShopContextProvider = (props) => {
 
     ////////////////////////////////////////////////////
     useEffect(() => {
-        fetch('https://e-commerce-backend-sme3.onrender.com/allproducts')
+        fetch('https://project-think-backend.onrender.com/allproducts')
             .then((Response) => Response.json())
             .then((data) => setAll_product(data))
     }, [])
