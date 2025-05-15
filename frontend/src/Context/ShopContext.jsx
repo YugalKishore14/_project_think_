@@ -28,9 +28,26 @@ const ShopContextProvider = (props) => {
     ////////////////////////////////////////////////////////////////////
     const addTocartt = (itemId) => {
         setCartItems((prev) => {
-            const updatedCart = { ...prev, [itemId]: prev[itemId] + 1 };
+            const updatedCart = {
+                ...prev,
+                [itemId]: (prev[itemId] || 0) + 1
+            };
             return updatedCart;
         });
+
+        if (localStorage.getItem('auth-token')) {
+            fetch('https://project-think-backend.onrender.com/addtocart', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": localStorage.getItem('auth-token')
+                },
+                body: JSON.stringify({ id: itemId })
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error("Add to cart error:", err));
+        }
     };
 
     const removeFromCartt = (itemId) => {
