@@ -15,11 +15,6 @@ const { error } = require("console");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// const corsOptions = {
-//     origin: "http://localhost:5173",
-//     optionsSuccessStatus: 200
-// };
-
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -49,15 +44,21 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model("Product", productSchema);
 
+
 // User Schema
 const userSchema = new mongoose.Schema({
     name: String,
     email: { type: String, unique: true },
     password: String,
+    role: {
+        type: String, enum: ['user', 'admin'], default: 'user'
+    },
     cartData: Object,
     date: { type: Date, default: Date.now },
 });
+
 const Users = mongoose.model("Users", userSchema);
+
 
 // Routes
 app.get("/", (req, res) => res.send("Express App is Running"));
@@ -117,47 +118,56 @@ app.get("/allproducts", async (req, res) => {
 // Signup
 app.post("/signup", async (req, res) => {
     try {
-        let check = await Users.findOne({ email: req.body.email });
-        if (check)
-            return res
-                .status(400)
-                .json({ success: false, errors: "User already exists" });
+        const { name, email, password, role } = req.body;
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        let check = await Users.findOne({ email });
+        if (check) return res.status(400).json({ success: false, errors: "User already exists" });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         let cart = {};
         for (let i = 0; i < 300; i++) cart[i] = 0;
 
         const user = new Users({
-            name: req.body.name,
-            email: req.body.email,
+            name,
+            email,
             password: hashedPassword,
+            role: role || "user",
             cartData: cart,
         });
 
         await user.save();
-        const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET);
-        res.json({ success: true, token });
+
+        const token = jwt.sign({ user: { id: user.id, role: user.role } }, process.env.JWT_SECRET);
+
+        res.json({ success: true, token, role: user.role });
     } catch (error) {
         res.status(500).json({ success: false, message: "Signup failed" });
     }
 });
 
+
+
 // Login
 app.post("/login", async (req, res) => {
     try {
-        const user = await Users.findOne({ email: req.body.email });
+        const { email, password } = req.body;
+
+        const user = await Users.findOne({ email });
         if (!user) return res.json({ success: false, errors: "Wrong Email Id" });
 
-        const passCompare = await bcrypt.compare(req.body.password, user.password);
-        if (!passCompare)
-            return res.json({ success: false, errors: "Wrong Password" });
+        const passCompare = await bcrypt.compare(password, user.password);
+        if (!passCompare) return res.json({ success: false, errors: "Wrong Password" });
 
-        const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET);
-        res.json({ success: true, token });
+        const token = jwt.sign({ user: { id: user._id, role: user.role } }, process.env.JWT_SECRET);
+
+        res.json({ success: true, token, role: user.role });
     } catch (error) {
         res.status(500).json({ success: false, message: "Login failed" });
     }
 });
+
+
 
 // New Collection
 app.get("/newcollection", async (req, res) => {
